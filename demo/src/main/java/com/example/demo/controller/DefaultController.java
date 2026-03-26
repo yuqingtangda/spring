@@ -42,15 +42,12 @@ public class DefaultController {
 	public String test(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 
-		defaultService.getUserList();
-
-		System.out.println("test.dox 호출 됩!!");
-		System.out.println(map);
-
-		resultMap.put("result", "success");
-		resultMap.put("Hello", "Word");
+		resultMap = defaultService.getUserList();
 
 		return new Gson().toJson(resultMap);
 	}
+	
+	
+	}
 
-}
+
