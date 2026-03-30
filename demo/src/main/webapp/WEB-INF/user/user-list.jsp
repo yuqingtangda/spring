@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,6 +8,7 @@
     <title>Document</title>
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="/js/page-change.js"></script>
     <style>
         table, tr, td, th{
             border : 1px solid black;
@@ -26,42 +27,32 @@
 <body>
     <div id="app">
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
-         <div>
-           <div>
-            검색어 : <input v-model="keyword">
-            <button @click="fnGetList">검색</button>
-            <select v-model="dept" @change="fnGetList">
-                <option value="">:: 전체 ::</option>
-                <option value="기계">기계</option>
-                <option value="전기전자">전기전자</option>
-                <option value="컴퓨터정보">컴퓨터정보</option>
-            </select>
-         </div>
-            <table>
+         <table>
              <tr>
-                <th>학번</th>
+                <th>선택</th>
+                <th>아이디</th>
                 <th>이름</th>
-                <th>학과</th>
-                <th>학년</th>
-                <th>성별</th> 
-                <th>삭제</th>  
+                <th>성별</th>
+                <th>삭제</th>
+                
              </tr>
              <tr v-for="item in list">
-                <td>{{item.stuNo}}</td>
-                <td>{{item.stuName}}</td>
-                <td>{{item.stuDept}}</td>
-                <td>{{item.stuGrade}}</td>
-                <td>
-                    <span v-if="item.stuGender == 'M'">남자</span>
-                    <span v-else>여자</span>
+                  <td>
+                    <input type="radio" name="user" v-model="selectUserId" :value="item.userId">
                 </td>
-                <td><button @click="fnRemove(item.stuNo)">삭제</button></td>
+                <td>{{item.userId}}</td>
+                <td>{{item.userName}}</td>
+                <td>
+                    <span v-if="item.gender== 'M'">남자</span>
+                    <span v-else-if="item.gender== 'F'">여자</span>
+                    <span v-else>정보 없음</span>
+                </td>
+                <td>
+                    <button @click="fnRemove(item.userId)">삭제</button>
+                </td>
              </tr>
-            </table>
-         </div>
-         <div>
-            <button @click="fnAdd">학생추가</button>
-         </div>
+         </table>
+         <button @click="fnDelete()">삭제</button>
     </div>
 </body>
 </html>
@@ -72,20 +63,16 @@
             return {
                 // 변수 - (key : value)
                 list : [],
-                keyword : "",
-                dept : ""
+                selectUserId : ""
             };
         },
         methods: {
             // 함수(메소드) - (key : function())
             fnGetList: function () {
                 let self = this;
-                let param = {
-                    keyword : self.keyword,
-                    dept : self.dept
-                };
+                let param = {};
                 $.ajax({
-                    url: "http://localhost:8080/stu-list.dox",
+                    url: "http://localhost:8080/user/list.dox",
                     dataType: "json",
                     type: "POST",
                     data: param,
@@ -95,25 +82,43 @@
                     }
                 });
             },
-             fnRemove: function (stuNo) {
+             fnRemove: function (userId) {
                 let self = this;
+                if(!confirm("삭제 할래?")){
+                    return;
+                }
                 let param = {
-                    stuNo : stuNo
+                    userId : userId
                 };
                 $.ajax({
-                    url: "http://localhost:8080/stu-remove.dox",
+                    url: "http://localhost:8080/user/remove.dox",
                     dataType: "json",
                     type: "POST",
                     data: param,
                     success: function (data) {
-                        console.log(data);
+                        alert(data.message);
+                        self.fnGetList();   
+                    }
+                });
+            },
+             fnDelete: function () {
+                let self = this;
+                 if(!confirm("삭제 할래?")){
+                    return;
+                }
+                let param = {
+                    userId : self.selectUserId
+                };
+                $.ajax({
+                    url: "http://localhost:8080/user/remove.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
                         alert(data.message);
                         self.fnGetList();
                     }
                 });
-            },
-            fnAdd : function(){
-                location.href="stu-add.do"
             }
         }, // methods
         mounted() {

@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,6 +8,7 @@
     <title>Document</title>
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="/js/page-change.js"></script>
     <style>
         table, tr, td, th{
             border : 1px solid black;
@@ -26,41 +27,40 @@
 <body>
     <div id="app">
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
-         <div>
-           <div>
-            검색어 : <input v-model="keyword">
-            <button @click="fnGetList">검색</button>
-            <select v-model="dept" @change="fnGetList">
-                <option value="">:: 전체 ::</option>
-                <option value="기계">기계</option>
-                <option value="전기전자">전기전자</option>
-                <option value="컴퓨터정보">컴퓨터정보</option>
-            </select>
-         </div>
+         <div id="container">
+            <div class="search-area">
+                <label>학년 :
+                    <select v-model="grade" @change="fnGetList">
+                        <option value="">:: 전체 ::</option>
+                        <option value="1">1학년</option>
+                        <option value="2">2학년</option>
+                        <option value="3">3학년</option>
+                        <option value="4">4학년</option>
+                    </select>
+                </label>
+            </div>
+         <div class="table-area">
             <table>
              <tr>
                 <th>학번</th>
                 <th>이름</th>
+                <th>학부</th>
                 <th>학과</th>
                 <th>학년</th>
-                <th>성별</th> 
-                <th>삭제</th>  
-             </tr>
-             <tr v-for="item in list">
-                <td>{{item.stuNo}}</td>
-                <td>{{item.stuName}}</td>
-                <td>{{item.stuDept}}</td>
-                <td>{{item.stuGrade}}</td>
-                <td>
-                    <span v-if="item.stuGender == 'M'">남자</span>
-                    <span v-else>여자</span>
-                </td>
-                <td><button @click="fnRemove(item.stuNo)">삭제</button></td>
-             </tr>
+                <th>담당교수</th>
+                </tr>
+                <tr v-for="item in list">
+                    <td>{{item.stuNo}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.dName2}}</td>
+                    <td>{{item.dName3}}</td>
+                    <td>{{item.grade}}</td>
+                    <td>{{item.profName}}</td>
+
+                </tr>
             </table>
-         </div>
-         <div>
-            <button @click="fnAdd">학생추가</button>
+
+</div>
          </div>
     </div>
 </body>
@@ -72,8 +72,7 @@
             return {
                 // 변수 - (key : value)
                 list : [],
-                keyword : "",
-                dept : ""
+                grade : ""
             };
         },
         methods: {
@@ -81,11 +80,10 @@
             fnGetList: function () {
                 let self = this;
                 let param = {
-                    keyword : self.keyword,
-                    dept : self.dept
+                    grade : self.grade
                 };
                 $.ajax({
-                    url: "http://localhost:8080/stu-list.dox",
+                    url: "http://localhost:8080/stu/list.dox",
                     dataType: "json",
                     type: "POST",
                     data: param,
@@ -94,26 +92,6 @@
                         self.list = data.list;
                     }
                 });
-            },
-             fnRemove: function (stuNo) {
-                let self = this;
-                let param = {
-                    stuNo : stuNo
-                };
-                $.ajax({
-                    url: "http://localhost:8080/stu-remove.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-                        console.log(data);
-                        alert(data.message);
-                        self.fnGetList();
-                    }
-                });
-            },
-            fnAdd : function(){
-                location.href="stu-add.do"
             }
         }, // methods
         mounted() {

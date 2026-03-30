@@ -13,8 +13,8 @@ import com.example.demo.model.Board;
 public class BoardService {
 	@Autowired
 	BoardMapper boardMapper;
-	
-	public HashMap<String, Object> getBoardList(HashMap<String, Object> map){
+
+	public HashMap<String, Object> getBoardList(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			List<Board> list = boardMapper.selectBoardList(map);
@@ -26,11 +26,11 @@ public class BoardService {
 			System.out.println(e.getMessage());
 			resultMap.put("message", "서버 에러!");
 			resultMap.put("result", "fail");
-		}		
+		}
 		return resultMap;
 	}
-	
-	public HashMap<String, Object> addBoard(HashMap<String, Object> map){
+
+	public HashMap<String, Object> addBoard(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			boardMapper.insertBoard(map);
@@ -41,16 +41,16 @@ public class BoardService {
 			System.out.println(e.getMessage());
 			resultMap.put("message", "서버 에러!");
 			resultMap.put("result", "fail");
-		}		
+		}
 		return resultMap;
 	}
-	
-	public HashMap<String, Object> getBoard(HashMap<String, Object> map){
+
+	public HashMap<String, Object> getBoard(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
-			if(map.get("kind").equals("view")) {
+			if (map.get("kind").equals("view")) {
 				boardMapper.updateCnt(map);
-			}		
+			}
 			Board info = boardMapper.selectBoard(map);
 			resultMap.put("info", info);
 			resultMap.put("message", "데이터 조회 성공");
@@ -60,11 +60,11 @@ public class BoardService {
 			System.out.println(e.getMessage());
 			resultMap.put("message", "서버 에러!");
 			resultMap.put("result", "fail");
-		}		
+		}
 		return resultMap;
 	}
-	
-	public HashMap<String, Object> editBoard(HashMap<String, Object> map){
+
+	public HashMap<String, Object> editBoard(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			boardMapper.updateBoard(map);
@@ -75,8 +75,8 @@ public class BoardService {
 			System.out.println(e.getMessage());
 			resultMap.put("message", "서버 에러!");
 			resultMap.put("result", "fail");
-		}		
+		}
 		return resultMap;
 	}
-	
+
 }

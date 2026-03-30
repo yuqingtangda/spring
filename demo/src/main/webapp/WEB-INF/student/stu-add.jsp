@@ -36,9 +36,9 @@
         <div>
             <label>학과 : <input v-model="info.stuDept"></label>
         </div>
-        <div>
+         <div>
+            학년 : 
             <select v-model="info.stuGrade">
-                학년 :
                 <option value="1">1학년</option>
                 <option value="2">2학년</option>
                 <option value="3">3학년</option>
@@ -46,8 +46,8 @@
         </div>
         <div>
             성별 :
-            <label><input name="gender" type="radio" v-model="info.stuGender">남자</label>
-            <label><input name="gender" type="radio" v-model="info.stuGender">여자</label>
+            <label><input name="gender" type="radio" value="M" v-model="info.stuGender">남자</label>
+            <label><input name="gender" type="radio" value="F" v-model="info.stuGender">여자</label>
        </div>
        <div>
         <button @click="fnAdd">추가!</button>
@@ -61,18 +61,19 @@
         data() {
             return {
                 // 변수 - (key : value)
-               info : {
-                stuNo : "",
-                stuName : "",
-                stuDept : "",
-                stuGrade : "1",
-                stuGender : "F"
-               }
+                info : {
+                    stuNo : "",
+                    stuName :"",
+                    stuDept : "",
+                    stuGrade : "1",
+                    stuGender : "F"
+                }
+                
             };
         },
         methods: {
             // 함수(메소드) - (key : function())
-            fnCheck: function () {
+            fnCheck : function () {
                 let self = this;
                 let param = {
                     stuNo : self.info.stuNo
@@ -88,13 +89,13 @@
                     }
                 });
             },
-            fnAdd: function () {
+            fnAdd : function () {
                 let self = this;
                 if(self.info.stuNo.length != 8){
                     alert("학번은 8글자!");
                     return;
                 }
-                let param = self.info;       
+                let param = self.info;
                 $.ajax({
                     url: "http://localhost:8080/stu-add.dox",
                     dataType: "json",
