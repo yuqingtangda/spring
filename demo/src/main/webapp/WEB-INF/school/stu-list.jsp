@@ -38,30 +38,44 @@
                         <option value="4">4학년</option>
                     </select>
                 </label>
+                <label>
+                    학과 : 
+                    <select v-model="deptNo" @change="fnGetList">
+                        <option value="">:: 전체 ::</option>
+                        <option v-for="item in deptList" :value="item.deptNo">{{item.dName}}</option>
+                    </select>
+                </label>
             </div>
          <div class="table-area">
             <table>
              <tr>
+                <th>선택</th>
                 <th>학번</th>
                 <th>이름</th>
                 <th>학부</th>
                 <th>학과</th>
                 <th>학년</th>
                 <th>담당교수</th>
+                <th>삭제</th>
                 </tr>
                 <tr v-for="item in list">
+                    <td>
+                    <input type="radio" name="stu" v-model="selectStuNo" :value="item.stuNo">
+                   </td>
                     <td>{{item.stuNo}}</td>
                     <td>{{item.name}}</td>
                     <td>{{item.dName2}}</td>
                     <td>{{item.dName3}}</td>
                     <td>{{item.grade}}</td>
                     <td>{{item.profName}}</td>
-
+                    <td><button @click="fnRemove(item.stuNo)">삭제</button></td>
                 </tr>
             </table>
-
-</div>
-         </div>
+        </div>
+        <div class="btn-area">
+              <a href="/stu/add.do"><button>학생추가</button></a>
+        </div>
+    </div>
     </div>
 </body>
 </html>
@@ -72,7 +86,9 @@
             return {
                 // 변수 - (key : value)
                 list : [],
-                grade : ""
+                grade : "",
+                deptList : [],
+                deptNo : ""
             };
         },
         methods: {
@@ -80,7 +96,8 @@
             fnGetList: function () {
                 let self = this;
                 let param = {
-                    grade : self.grade
+                    grade : self.grade,
+                    deptNo : self.deptNo
                 };
                 $.ajax({
                     url: "http://localhost:8080/stu/list.dox",
@@ -90,6 +107,37 @@
                     success: function (data) {
                         console.log(data);
                         self.list = data.list;
+                        self.deptList = data.deptList;
+                    }
+                });
+            },
+             fnGetDeptList: function () {
+                let self = this;
+                let param = {};
+                $.ajax({
+                    url: "http://localhost:8080/dept/list.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        console.log(data);
+                        self.deptList = data.list;
+                    }
+                });
+            },
+            fnRemove: function (stuNo) {
+                let self = this;
+                let param = {
+                    stuNo : stuNo
+                };
+                $.ajax({
+                    url: "http://localhost:8080/stu/remove.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        alert(data.message);
+                        self.fnGetList();
                     }
                 });
             }
@@ -98,6 +146,7 @@
             // 처음 시작할 때 실행되는 부분
             let self = this;
             self.fnGetList();
+            // self.fnGetDeptList();
         }
     });
 

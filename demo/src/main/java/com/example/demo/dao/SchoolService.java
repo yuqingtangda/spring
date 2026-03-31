@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.common.Message;
 import com.example.demo.mapper.SchoolMapper;
+import com.example.demo.model.Dept;
 import com.example.demo.model.Professor;
 import com.example.demo.model.Student;
 
@@ -21,8 +22,10 @@ public class SchoolService {
 
 			try {
 				List<Professor> list = schoolMapper.selectProfList(map);
+				List<Dept> deptList = schoolMapper.selectDeptList(map);
 
 				resultMap.put("list", list);
+				resultMap.put("deptList", deptList);
 				resultMap.put("result", "success");
 				resultMap.put("message", Message.MSG_SEARCH);
 
@@ -40,10 +43,130 @@ public class SchoolService {
 
 		try {
 			List<Student> list = schoolMapper.selectStuList(map);
+			List<Dept> deptList = schoolMapper.selectDeptList(map);
+			
+		    resultMap.put("list", list);
+		    resultMap.put("deptList", deptList);
+			resultMap.put("result", "success");
+			resultMap.put("message", Message.MSG_SEARCH);
 
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+			resultMap.put("message", Message.MSG_SERVER_ERR);
+		}
+		return resultMap;
+	}
+	
+	public HashMap<String, Object> getDeptList(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		try {
+			List<Dept> list = schoolMapper.selectDeptList(map);
+            
 		    resultMap.put("list", list);
 			resultMap.put("result", "success");
 			resultMap.put("message", Message.MSG_SEARCH);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+			resultMap.put("message", Message.MSG_SERVER_ERR);
+		}
+		return resultMap;
+	}
+	
+	public HashMap<String, Object> addStu(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		try {
+		int result = schoolMapper.insertStu(map);
+
+			resultMap.put("result", "success");
+			resultMap.put("message", Message.MSG_ADD);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+			resultMap.put("message", Message.MSG_SERVER_ERR);
+		}
+		return resultMap;
+	}
+	
+	public HashMap<String, Object> addProf(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		try {
+		int result = schoolMapper.insertProf(map);
+
+			resultMap.put("result", "success");
+			resultMap.put("message", Message.MSG_ADD);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+			resultMap.put("message", Message.MSG_SERVER_ERR);
+		}
+		return resultMap;
+	}
+	
+	public HashMap<String, Object> getStu(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		try {
+		     Student info = schoolMapper.selectStu(map);
+             if(info != null) {
+            	 resultMap.put("stuFlg", false);
+            	 resultMap.put("message", "이미 사용중인 학번입니다.");
+             } else {
+            	 resultMap.put("stuFlg", true);
+            	 resultMap.put("message", "사용 가능한 학번입니다.");
+             }
+
+//			resultMap.put("list", list);
+			resultMap.put("result", "success");
+			
+			
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+			resultMap.put("message", Message.MSG_SERVER_ERR);
+		}
+		return resultMap;
+	}
+	
+	public HashMap<String, Object> removeStu(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		try {
+		    int result = schoolMapper.deleteStu(map);
+
+			resultMap.put("result", "success");
+			resultMap.put("message", Message.MSG_REMOVE);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+			resultMap.put("message", Message.MSG_SERVER_ERR);
+		}
+		return resultMap;
+	}
+	
+	public HashMap<String, Object> removeProf(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		try {
+		    int result = schoolMapper.deleteProf(map);
+
+			resultMap.put("result", "success");
+			resultMap.put("message", Message.MSG_REMOVE);
 
 		} catch (Exception e) {
 			// TODO: handle exception

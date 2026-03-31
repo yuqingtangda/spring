@@ -37,6 +37,19 @@
         <label>이름 : <input v-model="userName"></label>
     </div>
     <div>
+        핸드폰인증 : 
+        <template v-if="!phoneFlg">
+            <input v-model="phoneNumber" placeholder="핸드폰번호 입력하셈">
+            <button @click="fnAuth">인증번호 발송</button>
+        </template>
+        <template v-else>
+             <template v-if="">
+            <input v-model="phoneAuth" :placeholder="timer">
+            <button @click="fnAuthCheck">인증번호확인</button>
+        </template>
+        </template>
+    </div>
+    <div>
         <label>주소 : 
             <input v-model="addr">
             <button @click="fnAddr()">주소검색</button>
@@ -61,13 +74,26 @@
                 userId : "",
                 userName : "",
                 pwd : "",
-                addr : ""
+                addr : "",
+
+                phoneNumber : "01051680909",
+                ranStr : "",  // 문자로 받은 랜덤 숫자
+                phoneAuth : "", //내가 입력한 숫자
+                phoneFlg : false,
+                ranFlg : false,// 인증번호 정상 입력시 true
+
+                count : 180,
+                timer : ""
             };
         },
         methods: {
             // 함수(메소드) - (key : function())
              fnJoin: function () {
                 let self = this;
+                if(!self.ranFlg){
+                    alert("문자 인증 후 진행해주세요");
+                    return;
+                }
                 let param = {
                     userId : self.userId,
                     userName : self.userName,
@@ -101,6 +127,51 @@
             },
             fnAddr : function(){
                 window.open("/addr.do","addr","width=500,height=500");
+            },
+            fnAuth : function(){
+                let self = this;
+                let param = {
+                    phoneNumber : self.phoneNumber
+                };
+                $.ajax({
+                    url: "http://localhost:8080/send-one",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        console.log(data);
+                        if(data.res.groupInfo.status == "SENDING"){
+                            alert("문자가 전송되었습니다.");
+                            self.phoneFlg = true;
+                            self.ranStr = data.ranStr;
+                            setInterval(self.fnTimer,1000);
+                        } else {
+                            alert("에러가 발생했습니다.");
+                        }
+                    }
+                });
+            },
+            fnTimer : function(){
+                let self = this;
+                let min = "";
+                let sec = "";
+                min = parseInt(self.count / 60);
+                sec = parseInt(self.count % 60);
+
+                min = min < 10 ? "0" + min : min;
+                sec = sec < 10 ? "0" + sec : sec;
+
+                self.timer = min + ":" + sec
+                self.count--;
+            },
+            fnAuthCheck : function(){
+                let self = this;
+                if(self.ranStr == self.phoneAuth){
+                    alert("인증되었습니다.")
+                    self.ranFlg = true;
+                } else {
+                    alert("인증 다시 확인해주셈")
+                }
             }
         }, // methods
         mounted() {
