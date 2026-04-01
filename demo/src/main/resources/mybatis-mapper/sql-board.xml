@@ -7,32 +7,44 @@
 		SELECT *
 		FROM TBL_BOARD
 		WHERE TITLE LIKE CONCAT('%', #{keyword}, '%')
-		ORDER BY CDATETIME DESC, BOARDNO DESC		
+		ORDER BY CDATETIME DESC, BOARDNO DESC
 	</select>
-	<insert id="insertBoard" parameterType="hashmap">
-		INSERT INTO
-		TBL_BOARD
-		VALUES(null, 'user01', #{title}, #{contents},0 , #{kind}, NOW(), NOW())
+	<insert id="insertBoard" 
+			parameterType="hashmap" 
+			useGeneratedKeys="true" 
+			keyColumn="BOARDNO" 
+			keyProperty="boardNo">
+		INSERT INTO TBL_BOARD
+		VALUES(null, 'user01', #{title}, #{contents}, 0, #{kind}, NOW(), NOW())
 	</insert>
-	
+	<insert id="insertBoardFile" parameterType="hashmap">
+		INSERT INTO TBL_BOARD_FILE
+		VALUES(null, #{idx}, #{path}, #{fileName}, #{orgName}, #{size}, #{ext})
+	</insert>
 	<select id="selectBoard" parameterType="hashmap" resultType="com.example.demo.model.Board">
 		SELECT *
 		FROM TBL_BOARD
-		WHERE BOARDNO = #{boardNo}	
+		WHERE BOARDNO = #{boardNo}
 	</select>
+	<select id="selectBoardFile" parameterType="hashmap" resultType="com.example.demo.model.Board">
+		SELECT *
+		FROM TBL_BOARD_FILE
+		WHERE BOARDNO = #{boardNo}
+	</select>
+	
 	<update id="updateCnt" parameterType="hashmap">
-	UPDATE TBL_BOARD
-	SET
-	   CNT = CNT + 1
-	 WHERE BOARDNO = #{boardNo}	  
+		UPDATE TBL_BOARD
+		SET
+			CNT = CNT + 1
+		WHERE BOARDNO = #{boardNo}
+	</update>
+	<update id="updateBoard" parameterType="hashmap">
+		UPDATE TBL_BOARD
+		SET
+			TITLE = #{title},
+			CONTENTS = #{contents},
+			KIND = #{kind}
+		WHERE BOARDNO = #{boardNo}
 	</update>
 	
-	<update id="updateBoard" parameterType="hashmap">
-	UPDATE TBL_BOARD
-	SET
-	   TITLE = #{title},
-	   CONTENTS = #{contents},
-	   KIND = #{kind}
-	 WHERE BOARDNO = #{boardNo}	  
-	</update>
 </mapper>

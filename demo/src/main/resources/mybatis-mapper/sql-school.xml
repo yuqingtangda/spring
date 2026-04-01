@@ -1,49 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.demo.mapper.SchoolMapper">
 	<!-- 여러개 검색 -->
-	<select id="selectProfList" parameterType="hashmap" resultType="com.example.demo.model.Professor">
-		SELECT 
-			P.*, 
-			D2.DNAME AS DNAME2, 
-			D1.DNAME AS DNAME3
-		FROM PROFESSOR P 
-		INNER JOIN DEPARTMENT D1 ON P.DEPTNO = D1.DEPTNO
-		INNER JOIN DEPARTMENT D2 ON D1.PART = D2.DEPTNO
-		WHERE 1=1
-		<if test="position != '' and position != null">
+	<select id="selectProfList" parameterType="hashmap"
+		resultType="com.example.demo.model.Professor"> SELECT P.*, D2.DNAME AS
+		DNAME2, D1.DNAME AS DNAME3 FROM PROFESSOR P INNER JOIN DEPARTMENT D1 ON
+		P.DEPTNO = D1.DEPTNO INNER JOIN DEPARTMENT D2 ON D1.PART = D2.DEPTNO
+		WHERE 1=1 <if test="position != '' and position != null">
 			AND P.POSITION = #{position}
 		</if>
-		<if test="deptNo != '' and deptNo != null">
+		<if
+			test="deptNo != '' and deptNo != null">
 			AND P.DEPTNO = #{deptNo}
 		</if>
 	</select>
-	
-	<select id="selectStuList" parameterType="hashmap" resultType="com.example.demo.model.Student">
-		SELECT 
-			S.*, 
-			D2.DNAME AS DNAME2, 
-			D1.DNAME AS DNAME3, 
-			D3.DNAME AS SUB_DNAME3, 
-			P.NAME AS PROF_NAME
-		FROM STU S 
-		LEFT JOIN DEPARTMENT D3 ON S.DEPTNO2 = D3.DEPTNO
-		LEFT JOIN PROFESSOR P ON S.PROFNO = P.PROFNO
-		INNER JOIN DEPARTMENT D1 ON S.DEPTNO1 = D1.DEPTNO
-		INNER JOIN DEPARTMENT D2 ON D1.PART = D2.DEPTNO
-		WHERE 1=1 
-		<if test="grade != '' and grade != null">
+
+	<select id="selectStuList" parameterType="hashmap"
+		resultType="com.example.demo.model.Student"> SELECT S.*, D2.DNAME AS
+		DNAME2, D1.DNAME AS DNAME3, D3.DNAME AS SUB_DNAME3, P.NAME AS PROF_NAME
+		FROM STU S LEFT JOIN DEPARTMENT D3 ON S.DEPTNO2 = D3.DEPTNO LEFT JOIN
+		PROFESSOR P ON S.PROFNO = P.PROFNO INNER JOIN DEPARTMENT D1 ON S.DEPTNO1
+		= D1.DEPTNO INNER JOIN DEPARTMENT D2 ON D1.PART = D2.DEPTNO WHERE 1=1 <if
+			test="grade != '' and grade != null">
 			AND S.GRADE = #{grade}
 		</if>
-		<if test="deptNo != '' and deptNo != null">
+		<if
+			test="deptNo != '' and deptNo != null">
 			AND S.DEPTNO1 = #{deptNo}
 		</if>
 	</select>
-	
-	<select id="selectDeptList" parameterType="hashmap" resultType="com.example.demo.model.Dept">
-		SELECT * 
+
+	<select id="selectDeptList" parameterType="hashmap"
+		resultType="com.example.demo.model.Dept">
+		SELECT *
 		FROM DEPARTMENT
 		WHERE BUILD IS NOT NULL
 	</select>
@@ -52,25 +42,66 @@
 		INSERT INTO STU(STUNO, NAME, GRADE, DEPTNO1, PROFNO)
 		VALUES(#{stuNo}, #{stuName}, #{grade}, #{deptNo}, #{profNo})
 	</insert>
-	
+
 	<insert id="insertProf" parameterType="hashmap">
 		INSERT INTO PROFESSOR(PROFNO, NAME, POSITION, PAY, DEPTNO)
 		VALUES(#{profNo}, #{name}, #{position}, #{pay}, #{deptNo})
 	</insert>
-	
-	<select id="selectStu" parameterType="hashmap" resultType="com.example.demo.model.Student">
-		SELECT *
-		FROM STU
+
+	<select id="selectStu" parameterType="hashmap"
+		resultType="com.example.demo.model.Student">
+		SELECT
+		S.*,
+		D2.DNAME AS DNAME2,
+		D1.DNAME AS DNAME3,
+		D3.DNAME AS SUB_DNAME3,
+		P.NAME AS PROF_NAME
+		FROM STU S
+		LEFT JOIN DEPARTMENT D3 ON S.DEPTNO2 = D3.DEPTNO
+		LEFT JOIN PROFESSOR P ON S.PROFNO = P.PROFNO
+		INNER JOIN DEPARTMENT D1 ON S.DEPTNO1 = D1.DEPTNO
+		INNER JOIN DEPARTMENT D2 ON D1.PART = D2.DEPTNO
 		WHERE STUNO = #{stuNo}
 	</select>
-	
+
+	<select id="selectProf" parameterType="hashmap"
+		resultType="com.example.demo.model.Professor">
+		SELECT
+		P.*,
+		D2.DNAME AS DNAME2,
+		D1.DNAME AS DNAME3
+		FROM PROFESSOR P
+		INNER JOIN DEPARTMENT D1 ON P.DEPTNO = D1.DEPTNO
+		INNER JOIN DEPARTMENT D2 ON D1.PART = D2.DEPTNO
+		WHERE PROFNO = #{profNo}
+	</select>
+
 	<delete id="deleteStu" parameterType="hashmap">
-	    DELETE FROM STU
-	    WHERE STUNO = #{stuNo}	
+		DELETE FROM STU
+		WHERE STUNO = #{stuNo}
 	</delete>
-	
+
 	<delete id="deleteProf" parameterType="hashmap">
-	    DELETE FROM PROFESSOR
-	    WHERE PROFNO = #{profNo}	
+		DELETE FROM PROFESSOR
+		WHERE PROFNO = #{profNo}
 	</delete>
+
+	<update id="updateStu" parameterType="hashmap">
+		UPDATE STU SET
+		    NAME = #{stuName},
+		    GRADE = #{grade},
+		    DEPTNO1 = #{deptNo1},
+		    PROFNO = #{profNo}
+		WHERE STUNO = #{stuNo}
+	</update>
+
+	<update id="updateProf" parameterType="hashmap">
+		UPDATE PROFESSOR SET
+		    PROFNO = #{profNo},
+		    NAME = #{name},
+		    POSITION = #{position},
+			PAY = #{pay},
+			DEPTNO= #{deptNo}
+		WHERE PROFNO = #{profNo}
+	</update>
 </mapper>

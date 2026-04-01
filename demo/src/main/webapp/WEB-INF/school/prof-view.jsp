@@ -28,31 +28,19 @@
     <div id="app">
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
          <div>
-            <div>
-                검색어 : <input v-model="keyword">
-                <button @click="fnGetList">검색</button>
-            </div>
-           <table>
-             <tr>
-                <th>번호</th>
-                <th>제목</th>
-                <th>작성자</th>
-                <th>조회수</th>
-                <th>작성일</th> 
-             </tr>
-             <tr v-for="item in list">
-                <td>{{item.boardNo}}</td>
-                <td><a href="javascript:;" @click="fnView(item.boardNo)">{{item.title}}</a></td>
-                <td>{{item.userId}}</td>
-                <td>{{item.cnt}}</td>
-                <td>{{item.cDateTime}}</td>
-             </tr>
-            </table>
-            </div>
-            <div>
-                <a href="/board/add.do"><button>글쓰기</button></a>
-            </div>
-      </div>
+            이름 : {{info.name}}
+         </div>
+          <div>
+            번호 : {{info.profNo}}
+         </div>
+         <div>
+            학과 : {{info.deptNo}}
+         </div>
+         <div>
+            급여 : {{info.pay}}
+         </div>
+         <button @click="fnEdit">수정</button>
+    </div>
 </body>
 </html>
 
@@ -61,38 +49,36 @@
         data() {
             return {
                 // 변수 - (key : value)
-                list : [],
-                keyword : ""
+                profNo : "${map.profNo}",
+                info : {}
             };
         },
         methods: {
             // 함수(메소드) - (key : function())
-            fnGetList : function () {
+            fnGetInfo: function () {
                 let self = this;
                 let param = {
-                    keyword : self.keyword
+                    profNo : self.profNo
                 };
                 $.ajax({
-                    url: "http://localhost:8080/board/list.dox",
+                    url: "http://localhost:8080/prof/info.dox",
                     dataType: "json",
                     type: "POST",
                     data: param,
                     success: function (data) {
                         console.log(data);
-                        self.list = data.list;
+                        self.info = data.info;
                     }
                 });
             },
-            fnView : function(boardNo){
-                // alert(boardNo);
-                pageChange("/board/view.do",{boardNo : boardNo});
-
+            fnEdit : function(){
+                pageChange("/prof/edit.do",{profNo : this.profNo});
             }
         }, // methods
         mounted() {
             // 처음 시작할 때 실행되는 부분
             let self = this;
-            self.fnGetList();
+            self.fnGetInfo();
         }
     });
 

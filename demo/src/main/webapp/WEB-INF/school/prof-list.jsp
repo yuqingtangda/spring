@@ -46,8 +46,8 @@
                     </select>
                 </label>
                 </div>
-                <div class="table-area">
-          <table>
+        <div class="table-area">
+            <table>
              <tr>
                 <th>선택</th>
                 <th>번호</th>
@@ -60,10 +60,11 @@
              </tr>
              <tr v-for="item in list">
                  <td>
-                    <input type="radio" name="prof" v-model="selectprofNo" :value="item.profNo">
+                    <input type="radio" name="prof" v-model="selectProfNo" :value="item.profNo">
                 </td>
                 <td>{{item.profNo}}</td>
-                <td>{{item.name}}</td>
+                <td>
+                     <a href="javascript:;" @click="fnView(item.profNo)">{{item.name}}</a></td>
                 <td>{{item.position}}</td>
                 <td>{{item.pay}}</td>
                 <td>{{item.dName2}}</td>
@@ -71,12 +72,14 @@
                 <td><button @click="fnRemove(item.profNo)">삭제</button></td>
             </tr>
          </table>
+         </div>
           <div class="btn-area">
               <a href="/prof/add.do"><button>교수 추가</button></a>
-              <button @click="fnDelete()">삭제</button>
-        </div>
+              <button @click="fnDelete">삭제</button>
+              <button @click="fnView(selectProfNo)">상세보기</button>
          </div>
-    </div>
+        </div>
+    
     </div>
 </body>
 </html>
@@ -90,7 +93,7 @@
                 position : "",
                 deptList : [],
                 deptNo : "",
-                selectprofNo : ""
+                selectProfNo : ""
             };
         },
         methods: {
@@ -135,19 +138,27 @@
                     return;
                 }
                 let param = {
-                   profNo : self.selectprofNo
+                   profNo : self.selectProfNo
                 };
                 $.ajax({
-                    url: "http://localhost:8080/user/remove.dox",
+                    url: "http://localhost:8080/prof/remove.dox",
                     dataType: "json",
                     type: "POST",
                     data: param,
                     success: function (data) {
                         alert(data.message);
-                        self.selectprofNo = "";
+                        self.selectProfNo = "";
                         self.fnGetList();
                     }
                 });
+            },
+            fnView : function(profNo){
+                // let _profNo = profNo != '' ? profNo : self.selectProfNo;
+                if(profNo == ''){
+                    alert("교수 선택해주셈");
+                    return;
+                }
+               pageChange("/prof/view.do",{profNo : profNo});
             }
         }, // methods
         mounted() {
