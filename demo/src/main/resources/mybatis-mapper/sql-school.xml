@@ -17,18 +17,39 @@
 	</select>
 
 	<select id="selectStuList" parameterType="hashmap"
-		resultType="com.example.demo.model.Student"> SELECT S.*, D2.DNAME AS
-		DNAME2, D1.DNAME AS DNAME3, D3.DNAME AS SUB_DNAME3, P.NAME AS PROF_NAME
-		FROM STU S LEFT JOIN DEPARTMENT D3 ON S.DEPTNO2 = D3.DEPTNO LEFT JOIN
-		PROFESSOR P ON S.PROFNO = P.PROFNO INNER JOIN DEPARTMENT D1 ON S.DEPTNO1
-		= D1.DEPTNO INNER JOIN DEPARTMENT D2 ON D1.PART = D2.DEPTNO WHERE 1=1 <if
-			test="grade != '' and grade != null">
+		resultType="com.example.demo.model.Student"> 
+		SELECT 
+			S.*, 
+			D2.DNAME AS DNAME2, 
+			D1.DNAME AS DNAME3, 
+			D3.DNAME AS SUB_DNAME3, 
+			P.NAME AS PROF_NAME
+		FROM STU S 
+		LEFT JOIN DEPARTMENT D3 ON S.DEPTNO2 = D3.DEPTNO
+		LEFT JOIN PROFESSOR P ON S.PROFNO = P.PROFNO
+		INNER JOIN DEPARTMENT D1 ON S.DEPTNO1 = D1.DEPTNO
+		INNER JOIN DEPARTMENT D2 ON D1.PART = D2.DEPTNO
+		WHERE 1=1 
+		<if test="grade != '' and grade != null">
 			AND S.GRADE = #{grade}
 		</if>
-		<if
-			test="deptNo != '' and deptNo != null">
+		<if test="deptNo != '' and deptNo != null">
 			AND S.DEPTNO1 = #{deptNo}
 		</if>
+		
+		<choose>		
+		<when test="orderItem == 'name'">
+		ORDER BY NAME
+		</when>
+		<when test="orderItem == 'dept'">
+		ORDER BY D1.DNAME
+		</when>
+		<when test="orderItem == 'grade'">
+		ORDER BY GRADE
+		</when>
+		<otherwise>
+		</otherwise>
+		</choose>
 	</select>
 
 	<select id="selectDeptList" parameterType="hashmap"
@@ -79,6 +100,14 @@
 	<delete id="deleteStu" parameterType="hashmap">
 		DELETE FROM STU
 		WHERE STUNO = #{stuNo}
+	</delete>
+	
+	<delete id="deleteAllStu" parameterType="hashmap">
+		DELETE FROM STU
+		WHERE STUNO IN
+		<foreach collection ="list" item="item" open="(" separator="," close=")">
+		#{item}
+		</foreach>
 	</delete>
 
 	<delete id="deleteProf" parameterType="hashmap">

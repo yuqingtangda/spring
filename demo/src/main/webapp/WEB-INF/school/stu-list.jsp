@@ -46,6 +46,12 @@
                     </select>
                 </label>
             </div>
+            <div class="order-area">
+                <label><input type="radio" name="order" v-model="orderItem" value="name"> 이름순</label>
+                <label><input type="radio" name="order" v-model="orderItem" value="dept"> 학과순</label>
+                <label><input type="radio" name="order" v-model="orderItem" value="grade"> 학년순</label>
+                <button @change="fnGetList">조회</button>
+            </div>
          <div class="table-area">
             <table>
              <tr>
@@ -60,7 +66,8 @@
                 </tr>
                 <tr v-for="item in list">
                     <td>
-                    <input type="radio" name="stu" v-model="selectStuNo" :value="item.stuNo">
+                        <input type="checkbox" v-model="selectList" :value="item.stuNo">
+                        <input type="radio" name="stu" v-model="selectStuNo" :value="item.stuNo">
                    </td>
                     <td>{{item.stuNo}}</td>
                     <td>
@@ -76,6 +83,7 @@
         </div>
         <div class="btn-area">
               <a href="/stu/add.do"><button>학생추가</button></a>
+              <button @click="fnRemoveAll">삭제</button>
         </div>
     </div>
     </div>
@@ -88,9 +96,11 @@
             return {
                 // 변수 - (key : value)
                 list : [],
-                grade : "",
                 deptList : [],
-                deptNo : ""
+                selectList : [],
+                grade : "",               
+                deptNo : "",
+                orderItem : "grade"
             };
         },
         methods: {
@@ -99,7 +109,8 @@
                 let self = this;
                 let param = {
                     grade : self.grade,
-                    deptNo : self.deptNo
+                    deptNo : self.deptNo,
+                    orderItem : self.orderItem
                 };
                 $.ajax({
                     url: "http://localhost:8080/stu/list.dox",
@@ -143,8 +154,28 @@
                     }
                 });
             },
+
             fnView : function(stuNo){
                pageChange("/stu/view.do",{stuNo : stuNo});
+            },
+
+            fnRemoveAll : function(){
+                let self = this;
+                var fList = JSON.stringify(self.selectList);
+                let param = {
+                    selectList : fList
+                };
+                $.ajax({
+                    url: "http://localhost:8080/stu/remove-all.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        alert(data.message);
+                        self.selectList = [];
+                        self.fnGetList();
+                    }
+                });
             }
         }, // methods
         mounted() {
