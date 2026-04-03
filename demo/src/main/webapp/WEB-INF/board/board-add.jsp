@@ -136,9 +136,13 @@
                     data: param,
                     success: function (data) {
                         if(data.result == 'success'){
-                            self.fnFileAdd(data.boardNo);                            
+                            if($("#file1")[0].files[0] != undefined){
+                                self.fnFileAdd(data.boardNo);    
+                            } else {
+                                alert("등록되었습니다!");
+                                 location.href="/board/list.do";
+                            }                                                   
                         }
-
                     }
                 });
             },

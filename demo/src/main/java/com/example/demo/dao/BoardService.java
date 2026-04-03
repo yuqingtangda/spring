@@ -9,14 +9,19 @@ import org.springframework.stereotype.Service;
 import com.example.demo.mapper.BoardMapper;
 import com.example.demo.model.Board;
 
+import jakarta.servlet.http.HttpSession;
+
 @Service
 public class BoardService {
 	@Autowired
 	BoardMapper boardMapper;
+	
+	@Autowired
+	HttpSession session;
 
 	public HashMap<String, Object> getBoardList(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		try {
+		try {			
 			List<Board> list = boardMapper.selectBoardList(map);
 			resultMap.put("list", list);
 			resultMap.put("message", "데이터 조회 성공");
@@ -33,6 +38,7 @@ public class BoardService {
 	public HashMap<String, Object> addBoard(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
+			map.put("sessionId", session.getAttribute("sessionId"));
 			boardMapper.insertBoard(map);
 			System.out.println("insert된 key값 : " + map.get("boardNo"));
 			

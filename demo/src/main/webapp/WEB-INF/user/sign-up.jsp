@@ -66,7 +66,6 @@
                 userName : "",
                 pwd : "",
                 addr : "",
-
             };
         },
         methods: {
@@ -85,7 +84,6 @@
                     data: param,
                     success: function (data) {
                         alert(data.message);
-
                     }
                 });
             },

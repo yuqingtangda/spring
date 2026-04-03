@@ -8,6 +8,8 @@
     <title>Document</title>
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="/js/page-change.js"></script>
+    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
     <style>
         table, tr, td, th{
             border : 1px solid black;
@@ -27,46 +29,49 @@
     <div id="app">
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
          <div>
-            <label>아이디 : <input v-model="userId"></label>
+            <input placeholder="가격" v-model="price">
+            <button @click="fnPayment">결제</button>
          </div>
-        <div>
-            <label>비밀번호 : <input v-model="pwd" type="password"></label>
-         </div>
-         <button @click="fnLogin">로그인</button>
-         <button>회원가입</button>
     </div>
 </body>
 </html>
 
 <script>
+    IMP.init("imp57208741");
     const app = Vue.createApp({
         data() {
             return {
                 // 변수 - (key : value)
-                userId : "",
-                pwd : ""
+                price : 1
             };
         },
         methods: {
             // 함수(메소드) - (key : function())
-            fnLogin: function () {
-                let self = this;
-                let param = {
-                    userId : self.userId,
-                    pwd : self.pwd
-                };
-                $.ajax({
-                    url: "http://localhost:8080/login.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-                        alert(data.message);
-                        if(data.loginResult){
-                            location.href = data.url;
-                        }
-                    }
-                });
+            fnPayment: function () {
+               IMP.request_pay(
+  {
+    channelKey: "channel-key-fc2acc35-72ac-4185-a8da-0c1570f1fde4",
+    pay_method: "card",
+    merchant_uid:new Date().toLocaleString(), // 주문 고유 번호
+    name: "라면",
+    amount: 1,
+    buyer_email: "gildong@gmail.com",
+    buyer_name: "홍길동",
+    buyer_tel: "010-4242-4242",
+    buyer_addr: "서울특별시 강남구 신사동",
+    buyer_postcode: "01181",
+  },
+  function (response) {
+    console.log(response);
+    if(response.success){
+        alert("결제되었습니다.");
+        //우리쪽 db에 결제 정보 저장
+        //페이지 이동 필요하면 페이지 이동
+    } else {
+        alert("결제 실패!")
+    }
+  },
+);
             }
         }, // methods
         mounted() {
