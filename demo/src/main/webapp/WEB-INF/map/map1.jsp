@@ -37,7 +37,7 @@
         <div id="app">
             <!-- html 코드는 id가 app인 태그 안에서 작업 -->
             <div>
-                <select>
+                <select v-model="category" @click="fnSearch">
                     <option value="">:: 선택 ::</option>
                     <option value="MT1">대형마트</option>
                     <option value="CS2">편의점</option>
@@ -73,7 +73,9 @@
                     // 변수 - (key : value)
                     infowindow: null,
                     map: null,
-                    ps: null
+                    ps: null,
+                    category: "",
+                    markerList: []
                 };
             },
             methods: {
@@ -95,7 +97,7 @@
                     this.ps = new kakao.maps.services.Places(this.map);
 
                     // 카테고리로 은행을 검색합니다
-                    this.ps.categorySearch('BK9', this.placesSearchCB, { useMapBounds: true });
+                    // this.ps.categorySearch('BK9', this.placesSearchCB, { useMapBounds: true });
                 },
                 placesSearchCB: function (data, status, pagination) {
                     if (status === kakao.maps.services.Status.OK) {
@@ -110,12 +112,22 @@
                         map: this.map,
                         position: new kakao.maps.LatLng(place.y, place.x)
                     });
+                    this.markerList.push(marker);
+                    // 마커에 클릭이벤트를 등록합니다
                     kakao.maps.event.addListener(marker, 'click', function () {
                         // 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
                         this.infowindow.setContent('<div style="padding:5px;font-size:12px;">' + place.place_name + '</div>');
-                        this.infowindow.open(map, marker);
+                        this.infowindow.open(this.map, marker);
                     });
 
+                },
+                fnSearch() {
+                    let self = this;
+                    for (let i = 0; i < self.markerList.length; i++) {
+                        self.markerList[i].setMap(null); //마커를 지도에서 제거
+                    }
+                    self.markerList = [];
+                    self.ps.categorySearch(self.category, self.placesSearchCB, { useMapBounds: true });
                 }
             }, // methods
             mounted() {

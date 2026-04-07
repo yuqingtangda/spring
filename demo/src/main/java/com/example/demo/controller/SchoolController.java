@@ -83,6 +83,13 @@ public class SchoolController {
 	@ResponseBody
 	public String copy(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		int pageSize = Integer.parseInt((String) map.get("pageSize"));
+		int offSet = Integer.parseInt((String) map.get("offSet"));
+		
+		map.put("pageSize", pageSize);
+		map.put("offSet", offSet);
+		
 		resultMap = schoolService.getProfList(map);
 		return new Gson().toJson(resultMap);
 	}
